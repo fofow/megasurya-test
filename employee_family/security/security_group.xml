@@ -1,0 +1,12 @@
+<odoo>
+    <record id="group_employee_family_admin" model="res.groups">
+        <field name="name">Employee Family Admin Access</field>
+    </record>
+
+    <record id="rule_employee_family_portal_own" model="ir.rule">
+        <field name="name">Employee Family - Portal Own</field>
+        <field name="model_id" ref="model_employee_family"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('employee_id.user_id','=',user.id)]</field>
+    </record>
+</odoo>

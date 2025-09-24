@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend portal home to add family section -->
+    <template id="portal_my_home_family" inherit_id="portal.portal_my_home" priority="20">
+        <xpath expr="//div[hasclass('o_portal_my_home')]" position="inside">
+            <div class="o_portal_category row g-2 mt-3" id="portal_family_category">
+                <div class="col-md-6">
+                    <a href="/my/family" class="d-flex gap-2 gap-md-3 py-3 pe-2 px-md-3 h-100 rounded text-decoration-none bg-100">
+                        <div class="o_portal_icon d-flex align-items-center">
+                            <i class="fa fa-users fa-2x text-primary"/>
+                        </div>
+                        <div class="o_portal_content">
+                            <h5 class="mb-0">My Family</h5>
+                            <p class="text-muted mb-0 small">View and manage your family members</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Family List Page -->
+    <template id="portal_my_family_page" name="My Family Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_my_doc">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>My Family Members</h2>
+                    <a class="btn btn-primary" href="/my/family/new">
+                        <i class="fa fa-plus me-2"></i>Add Family Member
+                    </a>
+                </div>
+                
+                <div t-if="family_members" class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Relation</th>
+                                <th>Date of Birth</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="family_members" t-as="member">
+                                <tr>
+                                    <td><t t-esc="member.name"/></td>
+                                    <td><t t-esc="dict(member._fields['family_relationship'].selection).get(member.family_relationship)"/></td>
+                                    <td><t t-esc="member.date_of_birth"/></td>
+                                    <td class="text-end">
+                                        <a t-attf-href="/my/family/#{member.id}/edit" class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a t-attf-href="/my/family/#{member.id}/delete" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this family member?');">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info">
+                    No family members found. <a href="/my/family/new">Add a family member</a> to get started.
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Family Member Form -->
+    <template id="portal_family_form" name="Family Member Form">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_my_doc">
+                <h2 t-if="not record" class="mb-4">Add New Family Member</h2>
+                <h2 t-else="" class="mb-4">Edit Family Member</h2>
+                
+                <form method="post" class="o_portal_contact_details_form" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" t-att-value="record and record.name or ''" required="required"/>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Relation <span class="text-danger">*</span></label>
+                            <select name="family_relationship" class="form-select" required="required">
+                                <option value="">Select Relation</option>
+                                <t t-foreach="request.env['employee.family']._fields['family_relationship'].selection" t-as="relation">
+                                    <option t-att-value="relation[0]" t-att-selected="record and record.family_relationship == relation[0]">
+                                        <t t-esc="relation[1]"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" name="date_of_birth" class="form-control" t-att-value="record and record.date_of_birth or ''"/>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" class="form-control" rows="3"><t t-esc="record and record.notes or ''"/></textarea>
+                        </div>
+                        
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fa fa-save me-2"></i>Save
+                            </button>
+                            <a t-att-href="'/my/family'" class="btn btn-outline-secondary">
+                                <i class="fa fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

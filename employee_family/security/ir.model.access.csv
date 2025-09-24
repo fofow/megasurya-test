@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee_family_user,employee.family user,model_employee_family,base.group_user,1,1,1,0
+access_employee_family_portal,employee.family portal,model_employee_family,base.group_portal,1,1,1,0
+access_employee_family_admin,employee.family admin,model_employee_family,employee_family.group_employee_family_admin,1,1,1,1
